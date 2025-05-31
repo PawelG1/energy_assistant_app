@@ -1,8 +1,12 @@
 import 'package:energy_strategist/screens/solar_calculator_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void main() {
-  runApp(const SolarCalculatorApp());
+  runApp(const ProviderScope(
+    child: SolarCalculatorApp()
+    )
+  );
 }
 
 class SolarCalculatorApp extends StatelessWidget {
