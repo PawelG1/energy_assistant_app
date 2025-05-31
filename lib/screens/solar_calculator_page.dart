@@ -19,16 +19,12 @@ class SolarCalculatorPage extends ConsumerWidget {
           SliverAppBar(
             expandedHeight: 200.0,
             floating: false,
-            pinned: true,
+            pinned: false,
+            title: const Text('HITACHI',  
+              style: TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Helvetica', color: Colors.white),
+            ),
             flexibleSpace: FlexibleSpaceBar(
-              title: const Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('HITACHI', style: TextStyle(fontWeight: FontWeight.bold)),
-                  Text('Słoneczna Przyszłość', style: TextStyle(fontSize: 14)),
-                ],
-              ),
+              titlePadding: EdgeInsets.zero,
               background: Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
@@ -37,24 +33,27 @@ class SolarCalculatorPage extends ConsumerWidget {
                     colors: [Colors.red.shade600, Colors.orange.shade500],
                   ),
                 ),
-                child: const Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.wb_sunny, size: 48, color: Colors.white),
-                      SizedBox(height: 16),
-                      Text(
-                        'Kalkulator Kosztów Energii dla Każdego',
-                        style: TextStyle(color: Colors.white, fontSize: 18),
-                        textAlign: TextAlign.center,
-                      ),
-                      SizedBox(height: 8),
-                      Text(
-                        'Porównanie scenariuszy: tradycyjny vs. Hitachi Energy',
-                        style: TextStyle(color: Colors.white70, fontSize: 14),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
+                child: SafeArea(  // Dodajemy SafeArea
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,  // Zmieniamy to na min
+                      children: [
+                        const Spacer(),  // Elastycznie wypełnia przestrzeń
+                        const Icon(Icons.wb_sunny, size: 48, color: Colors.white),
+                        const SizedBox(height: 12),  // Zmniejszamy wysokość
+                        const Text(
+                          'Kalkulator Kosztów Energii dla Każdego',
+                          style: TextStyle(color: Colors.white, fontSize: 18),
+                          textAlign: TextAlign.center,
+                        ),
+                        const Spacer(),  // Elastycznie wypełnia przestrzeń
+                        // Usuwamy drugi tekst "HITACHI" (już mamy w title)
+                        const Text('Słoneczna Przyszłość', 
+                          style: TextStyle(fontSize: 14, color: Colors.white)),
+                        const SizedBox(height: 4),  // Zmniejszamy padding na dole
+                      ],
+                    ),
                   ),
                 ),
               ),

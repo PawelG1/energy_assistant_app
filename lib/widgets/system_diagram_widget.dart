@@ -19,7 +19,7 @@ class SystemDiagramWidget extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'Schemat systemu Hitachi Energy',
+              'Porównanie systemów: tradycyjny vs. Hitachi Energy',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),

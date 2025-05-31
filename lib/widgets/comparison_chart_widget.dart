@@ -26,7 +26,7 @@ class ComparisonChartWidget extends ConsumerWidget {
               height: 300,
               child: LineChart(
                 LineChartData(
-                  gridData:  FlGridData(show: true),
+                  gridData:  const FlGridData(show: true),
                   titlesData: FlTitlesData(
                     bottomTitles: AxisTitles(
                       sideTitles: SideTitles(
@@ -52,8 +52,8 @@ class ComparisonChartWidget extends ConsumerWidget {
                         },
                       ),
                     ),
-                    rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                    topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                    rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                    topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
                   ),
                   borderData: FlBorderData(show: true),
                   lineBarsData: [
@@ -69,7 +69,7 @@ class ComparisonChartWidget extends ConsumerWidget {
                       color: Colors.red,
                       barWidth: 3,
                       isStrokeCapRound: true,
-                      dotData: FlDotData(show: false),
+                      dotData: const FlDotData(show: false),
                     ),
                     
                     // Scenariusz z PV (skumulowane koszty + koszt instalacji)
@@ -85,7 +85,7 @@ class ComparisonChartWidget extends ConsumerWidget {
                       color: Colors.blue,
                       barWidth: 3,
                       isStrokeCapRound: true,
-                      dotData: FlDotData(show: false),
+                      dotData: const FlDotData(show: false),
                     ),
                     
                     // Oszczędności skumulowane
@@ -97,7 +97,7 @@ class ComparisonChartWidget extends ConsumerWidget {
                       color: Colors.green,
                       barWidth: 4,
                       isStrokeCapRound: true,
-                      dotData: FlDotData(show: false),
+                      dotData: const FlDotData(show: false),
                     ),
                   ],
                 ),
