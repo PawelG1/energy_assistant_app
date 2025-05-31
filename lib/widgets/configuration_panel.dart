@@ -27,13 +27,22 @@ class ConfigurationPanel extends ConsumerWidget {
                   'Konfiguracja systemu',
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
-                Switch(
-                  value: parameters.useStatisticalData,
-                  onChanged: (value) {
-                    ref.read(calculatorParametersProvider.notifier)
-                        .toggleDataSource(csvData);
-                  },
-                  activeColor: Colors.green,
+                Column(
+                  children: [
+                    Switch(
+                      value: parameters.useStatisticalData,
+                      onChanged: (value) {
+                        ref.read(calculatorParametersProvider.notifier)
+                            .toggleDataSource(csvData);
+                      },
+                      activeColor: Colors.green,
+                    ),
+                    const SizedBox(height: 2),
+                    const Text(
+                      'Załaduj dane statystyczne',
+                      style: TextStyle(fontSize: 11, color: Colors.grey),
+                    ),
+                  ],
                 ),
               ],
             ),
