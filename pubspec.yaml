@@ -1,4 +1,4 @@
-name: energy_assistant_app
+name: energy_strategist
 description: "A new Flutter project."
 publish_to: 'none'
 version: 0.1.0
@@ -17,3 +17,7 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  fonts:
+    - family: Helvetica
+      fonts:
+        - asset: assets/fonts/Helvetica/Helvetica.ttf
