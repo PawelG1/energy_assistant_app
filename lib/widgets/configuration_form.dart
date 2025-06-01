@@ -14,31 +14,33 @@ class ConfigurationForm extends ConsumerWidget {
       children: [
         // Pierwsza linia - Zużycie i Moc instalacji
         Row(
-          crossAxisAlignment: CrossAxisAlignment.start, // Wyrównaj elementy do góry
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
               child: _buildTextField(
-                'Roczne zużycie (kWh)',
-                parameters.annualConsumption.toString(),
+                'Roczne zużycie energii',
+                '${parameters.annualConsumption.toStringAsFixed(0)} kWh',
                 enabled: !parameters.useStatisticalData,
                 onChanged: (value) {
                   final parsed = double.tryParse(value);
-                  if (parsed != null) notifier.updateAnnualConsumption(parsed);
+                  if (parsed != null) {
+                    notifier.updateAnnualConsumption(parsed);
+                  }
                 },
-                subtitle: parameters.useStatisticalData ? 'GUS 2023, Małopolskie' : null,
+                subtitle: parameters.useStatisticalData ? 'Z danych statystycznych' : null,
               ),
             ),
             const SizedBox(width: 16),
             Expanded(
               child: _buildTextField(
-                'Moc instalacji (kW)',
-                parameters.installationSize.toString(),
+                'Moc instalacji',
+                '${parameters.installationSize.toStringAsFixed(1)} kW',
                 onChanged: (value) {
                   final parsed = double.tryParse(value);
-                  if (parsed != null) notifier.updateInstallationSize(parsed);
+                  if (parsed != null) {
+                    notifier.updateInstallationSize(parsed);
+                  }
                 },
-                // Dodajemy pusty placeholder dla równego wypozycjonowania
-                subtitle: ' ',
               ),
             ),
           ],
@@ -47,31 +49,35 @@ class ConfigurationForm extends ConsumerWidget {
         
         // Druga linia - Cena energii i Autokonsumpcja
         Row(
-          crossAxisAlignment: CrossAxisAlignment.start, // Wyrównaj elementy do góry
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
               child: _buildTextField(
-                'Cena energii (PLN/kWh)',
-                parameters.energyPurchasePrice.toString(),
+                'Cena zakupu energii',
+                '${parameters.energyPurchasePrice.toStringAsFixed(2)} PLN/kWh',
                 enabled: !parameters.useStatisticalData,
                 onChanged: (value) {
                   final parsed = double.tryParse(value);
-                  if (parsed != null) notifier.updateEnergyPurchasePrice(parsed);
+                  if (parsed != null) {
+                    notifier.updateEnergyPurchasePrice(parsed);
+                  }
                 },
-                subtitle: parameters.useStatisticalData ? 'Tauron Kraków 2025' : null,
+                subtitle: parameters.useStatisticalData ? 'Z danych statystycznych' : null,
               ),
             ),
             const SizedBox(width: 16),
             Expanded(
               child: _buildTextField(
-                'Autokonsumpcja (%)',
-                parameters.autoConsumptionPercent.toString(),
+                'Autokonsumpcja',
+                '${parameters.autoConsumptionPercent.toStringAsFixed(0)}%',
                 enabled: !parameters.useStatisticalData,
                 onChanged: (value) {
                   final parsed = double.tryParse(value);
-                  if (parsed != null) notifier.updateAutoConsumptionPercent(parsed);
+                  if (parsed != null) {
+                    notifier.updateAutoConsumptionPercent(parsed);
+                  }
                 },
-                subtitle: parameters.useStatisticalData ? 'Badania branżowe' : null,
+                subtitle: parameters.useStatisticalData ? 'Z danych statystycznych' : null,
               ),
             ),
           ],
@@ -80,32 +86,35 @@ class ConfigurationForm extends ConsumerWidget {
         
         // Trzecia linia - Wzrost cen i Pojemność baterii
         Row(
-          crossAxisAlignment: CrossAxisAlignment.start, // Wyrównaj elementy do góry
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
               child: _buildTextField(
-                'Wzrost cen (%)',
-                parameters.energyPriceGrowth.toString(),
+                'Wzrost cen energii',
+                '${parameters.energyPriceGrowth.toStringAsFixed(1)}%',
                 enabled: !parameters.useStatisticalData,
                 onChanged: (value) {
                   final parsed = double.tryParse(value);
-                  if (parsed != null) notifier.updateEnergyPriceGrowth(parsed);
+                  if (parsed != null) {
+                    notifier.updateEnergyPriceGrowth(parsed);
+                  }
                 },
-                subtitle: parameters.useStatisticalData ? 'Prognoza energetyczna' : null,
+                subtitle: parameters.useStatisticalData ? 'Z danych statystycznych' : null,
               ),
             ),
             const SizedBox(width: 16),
             Expanded(
               child: _buildTextField(
-                'Pojemność baterii (kWh)',
-                parameters.batteryCapacity.toString(),
+                'Pojemność baterii',
+                '${parameters.batteryCapacity.toStringAsFixed(0)} kWh',
                 enabled: parameters.enableBattery,
                 onChanged: (value) {
                   final parsed = double.tryParse(value);
-                  if (parsed != null) notifier.updateBatteryCapacity(parsed);
+                  if (parsed != null) {
+                    notifier.updateBatteryCapacity(parsed);
+                  }
                 },
-                // Dodajemy pusty placeholder dla równego wypozycjonowania
-                subtitle: ' ',
+                subtitle: !parameters.enableBattery ? 'Wyłączona' : null,
               ),
             ),
           ],
@@ -118,7 +127,7 @@ class ConfigurationForm extends ConsumerWidget {
           runSpacing: 8,
           children: [
             _buildCheckbox(
-              'Ulgi i dofinansowanie',
+              'Ulgi i dotacje',
               parameters.enableSubsidies,
               notifier.toggleSubsidies,
             ),
@@ -145,7 +154,6 @@ class ConfigurationForm extends ConsumerWidget {
     Function(String)? onChanged,
     String? subtitle,
   }) {
-    // Zawsze rezerwuj miejsce na podtytuł, nawet jeśli jest pusty
     final bool hasSubtitle = subtitle != null && subtitle.trim().isNotEmpty;
     
     return Column(
@@ -154,31 +162,28 @@ class ConfigurationForm extends ConsumerWidget {
       children: [
         Text(label, style: const TextStyle(fontWeight: FontWeight.w500)),
         SizedBox(
-          // Stała wysokość dla obszaru podtytułu
-          height: 18, 
+          height: 18,
           child: hasSubtitle 
             ? Text(
                 subtitle,
-                style: TextStyle(fontSize: 12, color: Colors.green.shade600),
-                overflow: TextOverflow.ellipsis,
+                style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
               )
             : null,
         ),
         const SizedBox(height: 8),
         SizedBox(
-          height: 40, // Stała wysokość dla pola tekstowego
+          height: 40,
           child: TextFormField(
             initialValue: value,
             enabled: enabled,
             keyboardType: TextInputType.number,
+            onChanged: onChanged,
             decoration: InputDecoration(
               border: const OutlineInputBorder(),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               filled: !enabled,
-              fillColor: enabled ? null : Colors.green.shade50,
-              isDense: true,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+              fillColor: Colors.grey.shade100,
             ),
-            onChanged: onChanged,
           ),
         ),
       ],

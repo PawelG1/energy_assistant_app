@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'solar_calculator_page.dart';
 import 'dashboard_screen.dart';
-import 'threejs_webview_page.dart'; // Changed import
+import 'shadow_simulator_page.dart'; // Nowy import
 import 'upgrade_installation_screen.dart';
 import 'support_screen.dart';
 
@@ -15,11 +15,11 @@ class MainNavigationScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final currentIndex = ref.watch(navigationIndexProvider);
     
-    // List of screens for the navigation
+    // List of screens for the navigation - używamy nowej ShadowSimulatorPage
     final screens = [
       const DashboardScreen(),
       const SolarCalculatorPage(),
-      const ThreeJSWebViewPage(), // Changed screen
+      const ShadowSimulatorPage(), // Nowa klasa
       const UpgradeInstallationScreen(),
       const SupportScreen(),
     ];
@@ -27,7 +27,7 @@ class MainNavigationScreen extends ConsumerWidget {
     return Scaffold(
       body: screens[currentIndex],
       bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed, // Required for more than 3 items
+        type: BottomNavigationBarType.fixed,
         currentIndex: currentIndex,
         selectedItemColor: Colors.red.shade600,
         unselectedItemColor: Colors.grey,
@@ -42,8 +42,8 @@ class MainNavigationScreen extends ConsumerWidget {
             label: 'Installation Planner',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.wb_sunny), // Changed icon
-            label: 'Shadow Simulator', // Changed label
+            icon: Icon(Icons.school), // Zmieniona ikona na edukacyjną
+            label: 'PV Academy',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.upgrade),

@@ -2,17 +2,25 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PV Shadow Simulation</title>
   <style>
-    body { margin: 0; overflow: hidden; }
-    canvas { display: block; }
+    body { margin: 0; overflow: hidden; background-color: #f0f0f0; }
+    canvas { display: block; width: 100%; height: 100%; }
+    #message { 
+      position: absolute; 
+      top: 10px; 
+      left: 10px; 
+    }
   </style>
 </head>
 <body>
+  <div id="message">Hour: 12:00</div>
   <script type="module">
     import * as THREE from 'https://unpkg.com/three@0.152.2/build/three.module.js';
     import { OrbitControls } from 'https://unpkg.com/three@0.152.2/examples/jsm/controls/OrbitControls.js';
 
+    // Set up scene
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 100);
     camera.position.set(5, 5, 5);
@@ -20,9 +28,14 @@
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     document.body.appendChild(renderer.domElement);
 
     const controls = new OrbitControls(camera, renderer.domElement);
+    
+    // Add a grid
+    const grid = new THREE.GridHelper(20, 20, 0x888888, 0x444444);
+    scene.add(grid);
 
     // Panel fotowoltaiczny
     const panelGeometry = new THREE.BoxGeometry(3, 0.1, 2);
@@ -30,48 +43,96 @@
     const panel = new THREE.Mesh(panelGeometry, panelMaterial);
     panel.receiveShadow = true;
     panel.castShadow = true;
+    panel.position.y = 0.5;
     scene.add(panel);
 
-    // Podłoże
-    const ground = new THREE.Mesh(
-      new THREE.PlaneGeometry(10, 10),
-      new THREE.ShadowMaterial({ opacity: 0.4 })
-    );
+    // Nogi panelu
+    const legGeometry = new THREE.CylinderGeometry(0.05, 0.05, 1, 8);
+    const legMaterial = new THREE.MeshStandardMaterial({ color: 0x888888 });
+    
+    const leg1 = new THREE.Mesh(legGeometry, legMaterial);
+    leg1.position.set(-1.3, 0, 0.8);
+    leg1.castShadow = true;
+    scene.add(leg1);
+    
+    const leg2 = new THREE.Mesh(legGeometry, legMaterial);
+    leg2.position.set(1.3, 0, 0.8);
+    leg2.castShadow = true;
+    scene.add(leg2);
+    
+    const leg3 = new THREE.Mesh(legGeometry, legMaterial);
+    leg3.position.set(-1.3, 0, -0.8);
+    leg3.castShadow = true;
+    scene.add(leg3);
+    
+    const leg4 = new THREE.Mesh(legGeometry, legMaterial);
+    leg4.position.set(1.3, 0, -0.8);
+    leg4.castShadow = true;
+    scene.add(leg4);
+
+    // Ground plane
+    const groundGeometry = new THREE.PlaneGeometry(20, 20);
+    const groundMaterial = new THREE.MeshStandardMaterial({ color: 0x22aa22 });
+    const ground = new THREE.Mesh(groundGeometry, groundMaterial);
     ground.rotation.x = -Math.PI / 2;
-    ground.position.y = -0.05;
     ground.receiveShadow = true;
     scene.add(ground);
 
-    // Światło słoneczne
-    const sun = new THREE.DirectionalLight(0xffffcc, 1.0);
+    // Sun light
+    const sun = new THREE.DirectionalLight(0xffffcc, 1.5);
     sun.castShadow = true;
     sun.shadow.mapSize.width = 1024;
     sun.shadow.mapSize.height = 1024;
     sun.shadow.camera.near = 1;
     sun.shadow.camera.far = 20;
+    sun.shadow.camera.left = -10;
+    sun.shadow.camera.right = 10;
+    sun.shadow.camera.top = 10;
+    sun.shadow.camera.bottom = -10;
     scene.add(sun);
 
-    // Oświetlenie ambientowe
+    // Ambient light
     scene.add(new THREE.AmbientLight(0x444444));
 
+    // Update sun position based on hour
     function updateSun(hour) {
-      const radians = (hour - 12) / 12 * Math.PI; // -π/2 to π/2
-      const x = Math.cos(radians) * 5;
-      const y = Math.sin(radians) * 5 + 2; // +2 to unieść światło
-      const z = 3;
-      sun.position.set(x, y, z);
+      const sunAngle = (hour - 12) / 6 * Math.PI / 2;
+      const sunX = Math.sin(sunAngle) * 8;
+      const sunY = Math.cos(sunAngle) * 8 + 3;
+      const sunZ = 0;
+      
+      sun.position.set(sunX, sunY, sunZ);
+      sun.target.position.set(0, 0, 0);
+      sun.target.updateMatrixWorld();
+      
+      document.getElementById('message').textContent = `Hour: ${hour.toFixed(1)}:00`;
     }
 
-    // Obsługa komunikatu z Fluttera
+    // Listen for messages from Flutter
     window.addEventListener("message", (event) => {
-      const hour = parseFloat(event.data);
-      updateSun(hour);
+      if (event.data && event.data.type === 'updateHour') {
+        updateSun(event.data.hour);
+      }
+      if (event.data && event.data.type === 'updatePanel') {
+        panel.rotation.z = event.data.tilt * Math.PI / 180;
+        panel.rotation.y = event.data.azimuth * Math.PI / 180;
+      }
     });
 
-    updateSun(12); // start 12:00
+    // Initial position
+    updateSun(12);
 
+    // Handle window resize
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    // Animation loop
     function animate() {
       requestAnimationFrame(animate);
+      controls.update();
       renderer.render(scene, camera);
     }
     animate();

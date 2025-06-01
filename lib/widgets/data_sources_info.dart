@@ -11,162 +11,108 @@ class DataSourcesInfo extends ConsumerWidget {
     final csvData = ref.watch(csvDataProvider);
     final parameters = ref.watch(calculatorParametersProvider);
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
+    if (!parameters.useStatisticalData) {
+      return const SizedBox.shrink();
+    }
+
+    return Card(
+      elevation: 2,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(Icons.info, color: Colors.blue.shade500, size: 20),
-            const SizedBox(width: 8),
-            Text(
-              'Źródła danych statystycznych',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Colors.blue.shade800,
-              ),
+            Row(
+              children: [
+                Icon(Icons.data_usage, color: Colors.green.shade600),
+                const SizedBox(width: 8),
+                const Text(
+                  'Źródła danych statystycznych',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+              ],
             ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        GridView.count(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          crossAxisCount: 3,
-          childAspectRatio: 2.5,
-          mainAxisSpacing: 8,
-          crossAxisSpacing: 8,
-          children: [
+            const SizedBox(height: 12),
             _buildDataSourceCard(
-              '📊 Zużycie energii',
-              'GUS 2023',
-              '${parameters.annualConsumption.toStringAsFixed(0)} kWh/rok',
-              'Gospodarstwa domowe, miasta, woj. małopolskie',
+              'Ceny energii elektrycznej',
+              'Tauron Kraków: ${csvData.energyPrice.toStringAsFixed(2)} PLN/kWh',
+              Icons.bolt,
               Colors.blue,
             ),
+            const SizedBox(height: 8),
             _buildDataSourceCard(
-              '💰 Cena energii',
-              'Tauron Kraków',
-              '${parameters.energyPurchasePrice} PLN/kWh',
-              'Taryfa 2025, cena całkowita',
+              'Średnie zużycie energii',
+              'Małopolskie 2023: ${csvData.annualConsumption.toStringAsFixed(0)} kWh/rok',
+              Icons.home,
               Colors.green,
             ),
+            const SizedBox(height: 8),
             _buildDataSourceCard(
-              '📈 Produkcja PV',
-              'renewables.ninja',
-              '${csvData.avgHourlyProduction} kW/h na 1kW',
-              'Kraków 2019, 35°, azymut 180°',
+              'Wzrost cen energii',
+              'Prognoza roczna: ${csvData.energyPriceGrowth.toStringAsFixed(1)}%',
+              Icons.trending_up,
               Colors.orange,
             ),
+            const SizedBox(height: 8),
             _buildDataSourceCard(
-              '💱 Cena sprzedaży',
-              'PSE',
-              '${(csvData.avgMarketPrice/1000).toStringAsFixed(3)} PLN/kWh',
-              'Średnia RCE 2023',
-              Colors.purple,
+              'Produkcja fotowoltaiczna',
+              'Średnia: ${csvData.avgHourlyProduction.toStringAsFixed(3)} kW/kWp',
+              Icons.wb_sunny,
+              Colors.amber,
             ),
-            _buildDataSourceCard(
-              '🔄 Autokonsumpcja',
-              'Badania branżowe',
-              '${parameters.autoConsumptionPercent.toStringAsFixed(0)}%',
-              'Typowy poziom dla domów',
-              Colors.teal,
-            ),
-            _buildDataSourceCard(
-              '📊 Koszt instalacji',
-              'Cennik rynkowy',
-              '${csvData.installationCostPerKw.toStringAsFixed(0)} PLN/kW',
-              'Średnia cena rynkowa',
-              Colors.red,
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                _buildCSVFileChip('Tauron_Krakow.csv'),
+                const SizedBox(width: 8),
+                _buildCSVFileChip('Zuzycie_na_odbiorce.csv'),
+                const SizedBox(width: 8),
+                _buildCSVFileChip('PV.csv'),
+              ],
             ),
           ],
         ),
-        const SizedBox(height: 16),
-        Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: Colors.grey.shade50,
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: Colors.grey.shade300),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                '📁 Źródła plików CSV:',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.grey.shade800,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Wrap(
-                spacing: 8,
-                runSpacing: 4,
-                children: [
-                  _buildCSVFileChip('Tauron_Krakow.csv'),
-                  _buildCSVFileChip('Zuzycie_na_odbiorce.csv'),
-                  _buildCSVFileChip('Roczny_wzrost_ceny_energii.csv'),
-                  _buildCSVFileChip('Zysk_z_produkcji_energii.csv'),
-                  _buildCSVFileChip('PV.csv'),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ],
+      ),
     );
   }
 
   Widget _buildDataSourceCard(
     String title,
-    String source,
-    String value,
     String description,
+    IconData icon,
     Color color,
   ) {
     return Container(
-      padding: const EdgeInsets.all(8),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: color.withOpacity(0.1),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(color: color.withOpacity(0.3)),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
         children: [
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
-              color: Colors.black.withOpacity(0.6),
+          Icon(icon, color: color, size: 20),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 13,
+                  ),
+                ),
+                Text(
+                  description,
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: Colors.grey.shade600,
+                  ),
+                ),
+              ],
             ),
-          ),
-          Text(
-            source,
-            style: TextStyle(
-              fontSize: 10,
-              color: Colors.black.withOpacity(0.6),
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-              color: Colors.black.withOpacity(0.6),
-            ),
-          ),
-          Text(
-            description,
-            style: TextStyle(
-              fontSize: 9,
-              color: Colors.black.withOpacity(0.6),
-            ),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),
@@ -174,15 +120,26 @@ class DataSourcesInfo extends ConsumerWidget {
   }
 
   Widget _buildCSVFileChip(String filename) {
-    return Chip(
-      label: Text(
-        filename,
-        style: const TextStyle(fontSize: 10),
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade200,
+        borderRadius: BorderRadius.circular(12),
       ),
-      backgroundColor: Colors.white,
-      side: BorderSide(color: Colors.grey.shade400),
-      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-      visualDensity: VisualDensity.compact,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.insert_drive_file, size: 12, color: Colors.grey.shade600),
+          const SizedBox(width: 4),
+          Text(
+            filename,
+            style: TextStyle(
+              fontSize: 10,
+              color: Colors.grey.shade700,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
