@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>PV Shadow Simulation</title>
+  <style>
+    body { margin: 0; overflow: hidden; }
+    canvas { display: block; }
+  </style>
+</head>
+<body>
+  <script type="module">
+    import * as THREE from 'https://unpkg.com/three@0.152.2/build/three.module.js';
+    import { OrbitControls } from 'https://unpkg.com/three@0.152.2/examples/jsm/controls/OrbitControls.js';
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 100);
+    camera.position.set(5, 5, 5);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.shadowMap.enabled = true;
+    document.body.appendChild(renderer.domElement);
+
+    const controls = new OrbitControls(camera, renderer.domElement);
+
+    // Panel fotowoltaiczny
+    const panelGeometry = new THREE.BoxGeometry(3, 0.1, 2);
+    const panelMaterial = new THREE.MeshStandardMaterial({ color: 0x2222ff });
+    const panel = new THREE.Mesh(panelGeometry, panelMaterial);
+    panel.receiveShadow = true;
+    panel.castShadow = true;
+    scene.add(panel);
+
+    // Podłoże
+    const ground = new THREE.Mesh(
+      new THREE.PlaneGeometry(10, 10),
+      new THREE.ShadowMaterial({ opacity: 0.4 })
+    );
+    ground.rotation.x = -Math.PI / 2;
+    ground.position.y = -0.05;
+    ground.receiveShadow = true;
+    scene.add(ground);
+
+    // Światło słoneczne
+    const sun = new THREE.DirectionalLight(0xffffcc, 1.0);
+    sun.castShadow = true;
+    sun.shadow.mapSize.width = 1024;
+    sun.shadow.mapSize.height = 1024;
+    sun.shadow.camera.near = 1;
+    sun.shadow.camera.far = 20;
+    scene.add(sun);
+
+    // Oświetlenie ambientowe
+    scene.add(new THREE.AmbientLight(0x444444));
+
+    function updateSun(hour) {
+      const radians = (hour - 12) / 12 * Math.PI; // -π/2 to π/2
+      const x = Math.cos(radians) * 5;
+      const y = Math.sin(radians) * 5 + 2; // +2 to unieść światło
+      const z = 3;
+      sun.position.set(x, y, z);
+    }
+
+    // Obsługa komunikatu z Fluttera
+    window.addEventListener("message", (event) => {
+      const hour = parseFloat(event.data);
+      updateSun(hour);
+    });
+
+    updateSun(12); // start 12:00
+
+    function animate() {
+      requestAnimationFrame(animate);
+      renderer.render(scene, camera);
+    }
+    animate();
+  </script>
+</body>
+</html>

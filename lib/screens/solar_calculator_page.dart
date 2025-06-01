@@ -19,7 +19,7 @@ class SolarCalculatorPage extends ConsumerWidget {
           SliverAppBar(
             expandedHeight: 200.0,
             floating: false,
-            pinned: false,
+            pinned: true,
             title: const Text('HITACHI',  
               style: TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Helvetica', color: Colors.white),
             ),
@@ -33,25 +33,24 @@ class SolarCalculatorPage extends ConsumerWidget {
                     colors: [Colors.red.shade600, Colors.orange.shade500],
                   ),
                 ),
-                child: SafeArea(  // Dodajemy SafeArea
+                child: SafeArea(
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Column(
-                      mainAxisSize: MainAxisSize.min,  // Zmieniamy to na min
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Spacer(),  // Elastycznie wypełnia przestrzeń
-                        const Icon(Icons.wb_sunny, size: 48, color: Colors.white),
-                        const SizedBox(height: 12),  // Zmniejszamy wysokość
+                        const Spacer(),
+                        const Icon(Icons.solar_power, size: 48, color: Colors.white),
+                        const SizedBox(height: 12),
                         const Text(
                           'Kalkulator Kosztów Energii dla Każdego',
                           style: TextStyle(color: Colors.white, fontSize: 18),
                           textAlign: TextAlign.center,
                         ),
-                        const Spacer(),  // Elastycznie wypełnia przestrzeń
-                        // Usuwamy drugi tekst "HITACHI" (już mamy w title)
-                        const Text('Słoneczna Przyszłość', 
+                        const Spacer(),
+                        const Text('Planowanie instalacji', 
                           style: TextStyle(fontSize: 14, color: Colors.white)),
-                        const SizedBox(height: 4),  // Zmniejszamy padding na dole
+                        const SizedBox(height: 4),
                       ],
                     ),
                   ),
@@ -93,7 +92,7 @@ class SolarCalculatorPage extends ConsumerWidget {
           const SliverToBoxAdapter(
             child: Padding(
               padding: EdgeInsets.all(16.0),
-              child: ComparisonChartWidget(),
+              child: ComparisonChartWidget(), // Ten widget teraz zawiera dwa wykresy
             ),
           ),
 

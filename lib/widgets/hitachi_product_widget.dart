@@ -120,15 +120,43 @@ class HitachiProductsWidget extends ConsumerWidget {
           Container(
             height: 80,
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [product.color.withOpacity(0.8), product.color],
-              ),
               borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
             ),
             child: Stack(
+              fit: StackFit.expand,
               children: [
-                const Positioned.fill(
-                  child: Icon(Icons.image, size: 30, color: Colors.white54),
+                // Uproszczona logika ładowania obrazu
+                ClipRRect(
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
+                  child: Image.network(
+                    product.imageUrl,
+                    fit: BoxFit.cover,
+                    // Usunięto problematyczne nagłówki cache-control
+                    errorBuilder: (context, error, stackTrace) {
+                      // Prostsza obsługa błędów
+                      return Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [product.color.withOpacity(0.8), product.color],
+                          ),
+                        ),
+                        child: const Icon(Icons.image_not_supported, size: 30, color: Colors.white54),
+                      );
+                    },
+                  ),
+                ),
+                // Gradient overlay for text readability
+                Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        product.color.withOpacity(0.3),
+                        product.color.withOpacity(0.7),
+                      ],
+                    ),
+                  ),
                 ),
                 Positioned(
                   bottom: 8,
@@ -142,6 +170,7 @@ class HitachiProductsWidget extends ConsumerWidget {
                           color: Colors.white,
                           fontSize: 10,
                           fontWeight: FontWeight.w500,
+                          shadows: [Shadow(color: Colors.black, blurRadius: 2)],
                         ),
                       ),
                       Text(
@@ -150,6 +179,7 @@ class HitachiProductsWidget extends ConsumerWidget {
                           color: Colors.white,
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
+                          shadows: [Shadow(color: Colors.black, blurRadius: 2)],
                         ),
                       ),
                     ],
@@ -160,58 +190,85 @@ class HitachiProductsWidget extends ConsumerWidget {
           ),
           
           // Szczegóły produktu
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    product.name,
-                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  product.name,
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 4),
+                
+                // Specyfikacja techniczna - kompaktowo
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 4,
+                  children: [
+                    if (product.power != null)
+                      _buildSpecChip('Moc: ${product.power}kW'),
+                    if (product.efficiency != null)
+                      _buildSpecChip('Sprawność: ${product.efficiency}%'),
+                    if (product.capacity != null)
+                      _buildSpecChip('Pojemność: ${product.capacity}kWh'),
+                    if (product.cycles != null)
+                      _buildSpecChip('Cykle: ${product.cycles}'),
+                  ],
+                ),
+                
+                const SizedBox(height: 8),
+                
+                // Główne cechy
+                Text(
+                  product.features.take(2).join(' • '),
+                  style: const TextStyle(fontSize: 9, color: Colors.grey),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                
+                const SizedBox(height: 4),
+                
+                // Cena - zawsze na dole karty
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  decoration: BoxDecoration(
+                    color: product.color.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(4),
                   ),
-                  const SizedBox(height: 4),
-                  
-                  // Specyfikacja techniczna
-                  if (product.power != null)
-                    Text('Moc: ${product.power}kW', 
-                         style: const TextStyle(fontSize: 10, color: Colors.grey)),
-                  if (product.efficiency != null)
-                    Text('Sprawność: ${product.efficiency}%', 
-                         style: const TextStyle(fontSize: 10, color: Colors.grey)),
-                  if (product.capacity != null)
-                    Text('Pojemność: ${product.capacity}kWh', 
-                         style: const TextStyle(fontSize: 10, color: Colors.grey)),
-                  if (product.cycles != null)
-                    Text('Cykle: ${product.cycles}', 
-                         style: const TextStyle(fontSize: 10, color: Colors.grey)),
-                  
-                  const Spacer(),
-                  
-                  // Cena
-                  Text(
+                  child: Text(
                     '${cost.toStringAsFixed(0)} PLN',
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
                       color: product.color,
                     ),
+                    textAlign: TextAlign.center,
                   ),
-                  
-                  // Główne cechy
-                  Text(
-                    product.features.take(2).join(' • '),
-                    style: const TextStyle(fontSize: 9, color: Colors.grey),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ],
+      ),
+    );
+  }
+  
+  Widget _buildSpecChip(String text) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade100,
+        borderRadius: BorderRadius.circular(4),
+        border: Border.all(color: Colors.grey.shade300),
+      ),
+      child: Text(
+        text,
+        style: TextStyle(fontSize: 9, color: Colors.grey.shade800),
       ),
     );
   }

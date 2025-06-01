@@ -1,12 +1,15 @@
-import 'package:energy_strategist/screens/solar_calculator_page.dart';
+import 'package:energy_strategist/screens/main_navigation_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 void main() {
+  // Initialize WebView platform
+  WidgetsFlutterBinding.ensureInitialized();
+  
   runApp(const ProviderScope(
     child: SolarCalculatorApp()
-    )
-  );
+  ));
 }
 
 class SolarCalculatorApp extends StatelessWidget {
@@ -23,9 +26,10 @@ class SolarCalculatorApp extends StatelessWidget {
           primary: Colors.red.shade600,
           secondary: Colors.orange.shade500,
         ),
+        fontFamily: 'Helvetica', // Używamy Helvetica zamiast NotoSans
         useMaterial3: true,
       ),
-      home: const SolarCalculatorPage(),
+      home: const MainNavigationScreen(),
     );
   }
 }

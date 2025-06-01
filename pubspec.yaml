@@ -11,6 +11,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_riverpod: ^2.6.1
+  webview_flutter: ^4.7.0 # Added WebView dependency
 
 dev_dependencies:
   flutter_test:
@@ -19,6 +20,8 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/panel_sim.html
   fonts:
     - family: Helvetica
       fonts:

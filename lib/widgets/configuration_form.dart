@@ -14,6 +14,7 @@ class ConfigurationForm extends ConsumerWidget {
       children: [
         // Pierwsza linia - Zużycie i Moc instalacji
         Row(
+          crossAxisAlignment: CrossAxisAlignment.start, // Wyrównaj elementy do góry
           children: [
             Expanded(
               child: _buildTextField(
@@ -36,6 +37,8 @@ class ConfigurationForm extends ConsumerWidget {
                   final parsed = double.tryParse(value);
                   if (parsed != null) notifier.updateInstallationSize(parsed);
                 },
+                // Dodajemy pusty placeholder dla równego wypozycjonowania
+                subtitle: ' ',
               ),
             ),
           ],
@@ -44,6 +47,7 @@ class ConfigurationForm extends ConsumerWidget {
         
         // Druga linia - Cena energii i Autokonsumpcja
         Row(
+          crossAxisAlignment: CrossAxisAlignment.start, // Wyrównaj elementy do góry
           children: [
             Expanded(
               child: _buildTextField(
@@ -76,6 +80,7 @@ class ConfigurationForm extends ConsumerWidget {
         
         // Trzecia linia - Wzrost cen i Pojemność baterii
         Row(
+          crossAxisAlignment: CrossAxisAlignment.start, // Wyrównaj elementy do góry
           children: [
             Expanded(
               child: _buildTextField(
@@ -99,6 +104,8 @@ class ConfigurationForm extends ConsumerWidget {
                   final parsed = double.tryParse(value);
                   if (parsed != null) notifier.updateBatteryCapacity(parsed);
                 },
+                // Dodajemy pusty placeholder dla równego wypozycjonowania
+                subtitle: ' ',
               ),
             ),
           ],
@@ -138,27 +145,41 @@ class ConfigurationForm extends ConsumerWidget {
     Function(String)? onChanged,
     String? subtitle,
   }) {
+    // Zawsze rezerwuj miejsce na podtytuł, nawet jeśli jest pusty
+    final bool hasSubtitle = subtitle != null && subtitle.trim().isNotEmpty;
+    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       children: [
         Text(label, style: const TextStyle(fontWeight: FontWeight.w500)),
-        if (subtitle != null)
-          Text(
-            subtitle,
-            style: TextStyle(fontSize: 12, color: Colors.green.shade600),
-          ),
+        SizedBox(
+          // Stała wysokość dla obszaru podtytułu
+          height: 18, 
+          child: hasSubtitle 
+            ? Text(
+                subtitle,
+                style: TextStyle(fontSize: 12, color: Colors.green.shade600),
+                overflow: TextOverflow.ellipsis,
+              )
+            : null,
+        ),
         const SizedBox(height: 8),
-        TextFormField(
-          initialValue: value,
-          enabled: enabled,
-          keyboardType: TextInputType.number,
-          decoration: InputDecoration(
-            border: const OutlineInputBorder(),
-            filled: !enabled,
-            fillColor: enabled ? null : Colors.green.shade50,
-            isDense: true,
+        SizedBox(
+          height: 40, // Stała wysokość dla pola tekstowego
+          child: TextFormField(
+            initialValue: value,
+            enabled: enabled,
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(
+              border: const OutlineInputBorder(),
+              filled: !enabled,
+              fillColor: enabled ? null : Colors.green.shade50,
+              isDense: true,
+              contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+            ),
+            onChanged: onChanged,
           ),
-          onChanged: onChanged,
         ),
       ],
     );

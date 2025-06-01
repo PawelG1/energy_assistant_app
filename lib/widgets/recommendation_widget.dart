@@ -44,9 +44,11 @@ class RecommendationWidget extends ConsumerWidget {
             ),
             const SizedBox(height: 24),
             
-            // Metryki rekomendacji
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+            // Replace Row with Wrap for better responsiveness
+            Wrap(
+              alignment: WrapAlignment.center,
+              spacing: 16, // horizontal space
+              runSpacing: 16, // vertical space between rows
               children: [
                 _buildRecommendationMetric(
                   '${calculations.total25YearSavings.toStringAsFixed(0)} PLN',
@@ -68,33 +70,49 @@ class RecommendationWidget extends ConsumerWidget {
             
             const SizedBox(height: 24),
             
-            // Przyciski akcji
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ElevatedButton.icon(
-                  onPressed: () {
-                    // TODO: Implementuj eksport do PDF
-                  },
-                  icon: const Icon(Icons.download),
-                  label: const Text('Eksport PDF'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red.shade600,
-                    foregroundColor: Colors.white,
-                  ),
-                ),
-                ElevatedButton.icon(
-                  onPressed: () {
-                    // TODO: Implementuj kontakt z ekspertem
-                  },
-                  icon: const Icon(Icons.phone),
-                  label: const Text('Kontakt z ekspertem'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green.shade600,
-                    foregroundColor: Colors.white,
-                  ),
-                ),
-              ],
+            // Use LayoutBuilder to make buttons responsive
+            LayoutBuilder(
+              builder: (context, constraints) {
+                // Use Column for very narrow screens
+                if (constraints.maxWidth < 400) {
+                  return Column(
+                    children: [
+                      _buildActionButton(
+                        'Eksport PDF',
+                        Icons.download,
+                        Colors.red.shade600,
+                        () {/* TODO: Export to PDF */},
+                      ),
+                      const SizedBox(height: 8),
+                      _buildActionButton(
+                        'Kontakt z ekspertem',
+                        Icons.phone,
+                        Colors.green.shade600,
+                        () {/* TODO: Contact expert */},
+                      ),
+                    ],
+                  );
+                } else {
+                  // Use Row for wider screens
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      _buildActionButton(
+                        'Eksport PDF',
+                        Icons.download,
+                        Colors.red.shade600,
+                        () {/* TODO: Export to PDF */},
+                      ),
+                      _buildActionButton(
+                        'Kontakt z ekspertem',
+                        Icons.phone,
+                        Colors.green.shade600,
+                        () {/* TODO: Contact expert */},
+                      ),
+                    ],
+                  );
+                }
+              },
             ),
           ],
         ),
@@ -104,6 +122,7 @@ class RecommendationWidget extends ConsumerWidget {
 
   Widget _buildRecommendationMetric(String value, String label, Color color) {
     return Container(
+      width: 120, // Fixed width to ensure consistency
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -125,14 +144,31 @@ class RecommendationWidget extends ConsumerWidget {
               fontWeight: FontWeight.bold,
               color: color,
             ),
+            textAlign: TextAlign.center,
+            overflow: TextOverflow.ellipsis,
           ),
           const SizedBox(height: 4),
           Text(
             label,
             style: const TextStyle(fontSize: 12, color: Colors.grey),
             textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
           ),
         ],
+      ),
+    );
+  }
+  
+  Widget _buildActionButton(String label, IconData icon, Color color, VoidCallback onPressed) {
+    return ElevatedButton.icon(
+      onPressed: onPressed,
+      icon: Icon(icon),
+      label: Text(label),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: color,
+        foregroundColor: Colors.white,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       ),
     );
   }
