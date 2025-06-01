@@ -12,6 +12,11 @@ dependencies:
     sdk: flutter
   flutter_riverpod: ^2.6.1
   http: ^1.1.0
+  intl: ^0.18.1
+  pdf: ^3.10.4
+  printing: ^5.11.1
+  path_provider: ^2.1.2
+  share_plus: ^7.2.1
 
 dev_dependencies:
   flutter_test:
@@ -22,3 +27,4 @@ flutter:
   uses-material-design: true
   assets:
     - assets/panel_sim.html
+    - assets/hitachi_logo.png
