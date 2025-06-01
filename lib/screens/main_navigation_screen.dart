@@ -20,7 +20,7 @@ class MainNavigationScreen extends ConsumerWidget {
       const DashboardScreen(),
       const SolarCalculatorPage(),
       const ShadowSimulatorPage(), // Nowa klasa
-      const UpgradeInstallationScreen(),
+      const SystemManagementScreen(),
       const SupportScreen(),
     ];
 
@@ -46,8 +46,8 @@ class MainNavigationScreen extends ConsumerWidget {
             label: 'PV Academy',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.upgrade),
-            label: 'Upgrade',
+            icon: Icon(Icons.build),
+            label: 'Konserwacja',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.support_agent),
